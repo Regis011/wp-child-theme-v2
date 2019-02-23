@@ -25,6 +25,8 @@
     "webpack-cli": "^3.1.0"
   },
   "dependencies": {
-    "webpack-build-notifier": "^0.1.30"
+    "webpack-build-notifier": "^0.1.30",
+    "jquery": "^3.3.1",
+    "popper.js": "^1.14.7"
   }
 }
