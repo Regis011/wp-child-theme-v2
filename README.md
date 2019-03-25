@@ -14,6 +14,8 @@ $ npm install
 $ npm run dev
 ```
 
+Go to style.css file and change on line 7 - Template: to_your_parent_theme_name.
+
 For production environments...
 
 ```sh
