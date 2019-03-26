@@ -1,9 +1,13 @@
 /*
-Theme Name:     Child Theme
-Theme URI:      https://github.com/Regis011/wp-child-theme-v2
-Description:    Child theme with webpack
-Author:         Vladmir Rancic
-Author URI:     https://github.com/Regis011
-Template:       milos
-Version:        2.1.0
+ Theme Name:     Child Theme
+ Theme URI:      https://github.com/Regis011/wp-child-theme-v2
+ Description:    Wordpress child theme with webpack. Themes also use DOM-based Routing for JavaScript.
+ Author:         Vladmir Rancic
+ Author URI:     https://github.com/Regis011
+ Template:       atelier
+ Version:        2.2.0
+ License:        GNU General Public License v3 or later
+ License URI:    http://www.gnu.org/licenses/gpl-3.0.html
+ Tags:           child, child theme
+ Text Domain:    child-theme
 */
