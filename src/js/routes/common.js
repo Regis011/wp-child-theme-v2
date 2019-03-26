@@ -1,4 +1,5 @@
 //import dependecies
+import $ from 'jquery';
 
 // function
 let someCustomFunction = () => {
