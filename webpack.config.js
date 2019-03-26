@@ -6,11 +6,12 @@
 const webpack = require( 'webpack' );
 const path = require( 'path' );
 const autoprefixer = require( 'autoprefixer' );
-const ExtractTextPlugin = require( 'extract-text-webpack-plugin' );
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
 
-const blocksCSSPlugin = new ExtractTextPlugin( {
-	filename: './dist/style.build.css',
+// Extract style.css for both editor and frontend styles.
+const blocksCSSPlugin = new MiniCssExtractPlugin( {
+	filename: '[name].css',
 } );
 
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP === 'true';
@@ -28,39 +29,7 @@ const prodPlugins = [
 	blocksCSSPlugin,
 ];
 
-// Configuration for the ExtractTextPlugin — DRY rule.
-const extractConfig = {
-	use: [
-		// "postcss" loader applies autoprefixer to our CSS.
-		{ loader: 'raw-loader' },
-		{
-			loader: 'postcss-loader',
-			options: {
-				ident: 'postcss',
-				plugins: [
-					autoprefixer( {
-						browsers: [
-							'>1%',
-							'last 4 versions',
-							'Firefox ESR',
-							'not ie < 9',
-						],
-						flexbox: 'no-2009',
-					} ),
-				],
-			},
-		},
-		// "sass" loader converts SCSS to CSS.
-		{
-			loader: 'sass-loader',
-			options: {
-				outputStyle: 'production' === process.env.MODE ? 'compressed' : 'nested',
-			},
-		},
-	],
-};
-
-// Export configuration.
+//Export configuration.
 module.exports = {
 	entry: {
 		'./dist/build': path.resolve( 'src/index.js' ),
@@ -71,6 +40,10 @@ module.exports = {
 		path: path.resolve( __dirname ),
 		filename: '[name].js',
 	},
+	// externals: {
+  //   react: "React",
+  //   "react-dom": "ReactDOM"
+  // },
 	devtool: 'cheap-eval-source-map',
 	module: {
 		rules: [
@@ -82,11 +55,100 @@ module.exports = {
 				},
 			},
 			{
-				test: /style\.s?css$/,
-				exclude: /(node_modules|bower_components)/,
-				use: blocksCSSPlugin.extract( extractConfig ),
+				test: /\.s?css$/,
+				use: [
+					'style-loader',
+					{
+            loader: MiniCssExtractPlugin.loader
+          },
+					{
+						loader: "css-loader",
+						options: {
+							importLoaders: 1,
+							sourceMap: true
+            }
+					},
+					{ loader: 'resolve-url-loader' },
+					{
+						loader: 'postcss-loader',
+						options: {
+							ident: 'postcss',
+							plugins: [
+								autoprefixer( {
+									browsers: [
+										'>1%',
+										'last 4 versions',
+										'Firefox ESR',
+										'not ie < 9', // React doesn't support IE8 anyway
+									],
+									flexbox: 'no-2009',
+								} ),
+							],
+						},
+					},
+					{
+						loader: 'sass-loader',
+						options: {
+							outputStyle: 'production' === process.env.MODE ? 'compressed' : 'nested',
+						},
+					}
+				]
 			},
-		],
+			{
+				test: /\.(jpe?g|png|gif)$/i,
+				use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: 'dist/images',
+							name(file) {
+                if (process.env.MODE === 'development') {
+                  return '[path][name].[ext]';
+                }
+
+                return '[hash].[ext]';
+              },
+            },
+          },
+        ],
+			},
+			{
+				test: /\.svg$/,
+				use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: 'dist/svg',
+							name(file) {
+                if (process.env.MODE === 'development') {
+                  return '[path][name].[ext]';
+                }
+
+                return '[hash].[ext]';
+              },
+            },
+          },
+        ],
+      },
+			{
+				test: /\.(woff|ttf|otf|eot|woff2|svg)$/i,
+				use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: 'dist/fonts',
+							name(file) {
+                if (process.env.MODE === 'development') {
+                  return '[path][name].[ext]';
+                }
+
+                return '[hash].[ext]';
+              },
+            },
+          },
+        ]
+			}
+		]
 	},
 	plugins: 'production' === process.env.MODE ? prodPlugins : devPlugins,
 	stats: 'normal',
